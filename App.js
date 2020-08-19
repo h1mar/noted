@@ -4,8 +4,8 @@ import {
 	Text,
 	View,
 	TextInput,
-	Button,
 	TouchableOpacity,
+	Dimensions,
 } from 'react-native';
 import { Notifications } from 'expo';
 import * as Permissions from 'expo-permissions';
@@ -40,7 +40,11 @@ const App = () => {
 	const sendNotification = async () => {
 		askPermissions();
 
-		let notificationId = await Notifications.presentLocalNotificationAsync({
+		if (note === '') {
+			return;
+		}
+
+		await Notifications.presentLocalNotificationAsync({
 			title: note,
 		});
 		// console.log(notificationId); // can be saved in AsyncStorage or send to server
@@ -59,7 +63,7 @@ const App = () => {
 						value={inputValue}
 					/>
 					<TouchableOpacity onPress={sendNotification} style={styles.button}>
-						<Text style={styles.buttonText}>PUSH</Text>
+						<Text style={styles.buttonText}>SEND</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
@@ -80,7 +84,7 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		justifyContent: 'center',
 		alignItems: 'center',
-		flex: 1,
+		flexGrow: 1,
 		backgroundColor: 'black',
 	},
 	title: {
@@ -89,8 +93,10 @@ const styles = StyleSheet.create({
 		fontSize: 35,
 	},
 	innerContainer: {
-		width: 200,
+		width: Dimensions.get('window').width,
 		marginBottom: 150,
+		paddingLeft: 40,
+		paddingRight: 40,
 	},
 	inputNote: {
 		borderWidth: 1,
