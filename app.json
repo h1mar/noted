@@ -1,26 +1,31 @@
 {
-  "expo": {
-    "name": "noted",
-    "slug": "noted",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    }
-  }
+	"expo": {
+		"name": "Noted",
+		"slug": "noted",
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"updates": {
+			"fallbackToCacheTimeout": 0
+		},
+		"assetBundlePatterns": ["**/*"],
+		"ios": {
+			"supportsTablet": true
+		},
+		"web": {
+			"favicon": "./assets/favicon.png"
+		},
+		"androidStatusBar": {
+			"backgroundColor": "#000000",
+			"translucent": false,
+			"barStyle": "light-content"
+		},
+		"androidNavigationBar": {
+			"backgroundColor": "#000000",
+			"barStyle": "light-content"
+		},
+		"android": {
+			"package": "dev.himar.noted"
+		}
+	}
 }
