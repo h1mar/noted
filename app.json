@@ -1,19 +1,24 @@
 {
 	"expo": {
-		"name": "Noted",
+		"name": "noted",
 		"slug": "noted",
 		"version": "1.0.0",
 		"orientation": "portrait",
-		"icon": "./assets/icon.png",
+		"icon": "./assets/ic_launcher_xxxhdpi.png",
+		"backgroundColor": "#000000",
 		"updates": {
 			"fallbackToCacheTimeout": 0
+		},
+		"splash": {
+			"image": "./assets/splash.png",
+			"backgroundColor": "#000000"
 		},
 		"assetBundlePatterns": ["**/*"],
 		"ios": {
 			"supportsTablet": true
 		},
 		"web": {
-			"favicon": "./assets/favicon.png"
+			"favicon": "./assets/ic_launcher_mdpi.png"
 		},
 		"androidStatusBar": {
 			"backgroundColor": "#000000",
@@ -25,7 +30,12 @@
 			"barStyle": "light-content"
 		},
 		"android": {
-			"package": "dev.himar.noted"
+			"package": "dev.himar.noted",
+			"useNextNotificationsApi": true
+		},
+		"notification": {
+			"icon": "./assets/ic_launcher_xhdpi_notif_circle_reverse.png",
+			"color": "#ffffff"
 		}
 	}
 }

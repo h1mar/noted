@@ -5,18 +5,21 @@ import {
 	View,
 	TextInput,
 	TouchableOpacity,
+	KeyboardAvoidingView,
 	Dimensions,
+	Switch,
 } from 'react-native';
-import { Notifications } from 'expo';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 
 const App = () => {
-	const [note, setNote] = useState('');
-	const [inputValue, setInputValue] = useState('');
+	const [titleValue, setTitleValue] = useState('');
+	const [bodyValue, setBodyValue] = useState('');
+	const [isEnabled, setIsEnabled] = useState(false);
+	const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
 	const handleChange = (input) => {
-		setNote(input);
-		setInputValue(input);
+		setTitleValue(input);
 	};
 
 	const askPermissions = async () => {
@@ -27,11 +30,8 @@ const App = () => {
 		if (existingStatus !== 'granted') {
 			const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
 			finalStatus = status;
-			console.log('asked');
 		}
 		if (finalStatus !== 'granted') {
-			console.log('already granted');
-
 			return false;
 		}
 		return true;
@@ -40,44 +40,75 @@ const App = () => {
 	const sendNotification = async () => {
 		askPermissions();
 
-		if (note === '') {
+		if (titleValue === '') {
 			return;
 		}
 
-		await Notifications.presentLocalNotificationAsync({
-			title: note,
+		Notifications.setNotificationHandler({
+			handleNotification: async () => ({
+				shouldShowAlert: true,
+				shouldPlaySound: true,
+				shouldSetBadge: true,
+			}),
+		});
+
+		await Notifications.scheduleNotificationAsync({
+			content: {
+				title: titleValue,
+				body: bodyValue !== '' ? bodyValue : null,
+			},
+			trigger: null,
+		}).then(() => {
+			setTitleValue('');
+			setBodyValue('');
 		});
 		// console.log(notificationId); // can be saved in AsyncStorage or send to server
-		setInputValue('');
 	};
 
 	return (
-		<View style={styles.container}>
-			<View style={styles.upperContainer}>
-				<View style={styles.innerContainer}>
-					<Text style={styles.title}>Noted.</Text>
-					<TextInput
-						style={styles.inputNote}
-						onChangeText={(input) => handleChange(input)}
-						placeholder="Text goes here"
-						value={inputValue}
+		<KeyboardAvoidingView style={styles.container} behavior="height">
+			<View style={styles.innerContainer}>
+				<View style={styles.topContainer}>
+					<Text style={styles.title}>noted.</Text>
+					<Switch
+						style={styles.switch}
+						trackColor={{ false: '#cccccc', true: '#cccccc' }}
+						thumbColor={isEnabled ? '#ffffff' : '#ffffff'}
+						ios_backgroundColor="#3e3e3e"
+						onValueChange={toggleSwitch}
+						value={isEnabled}
 					/>
-					<TouchableOpacity onPress={sendNotification} style={styles.button}>
-						<Text style={styles.buttonText}>SEND</Text>
-					</TouchableOpacity>
 				</View>
+				<TextInput
+					selectionColor="white"
+					style={styles.inputNote}
+					onChangeText={(input) => setTitleValue(input)}
+					placeholderTextColor="grey"
+					placeholder={isEnabled ? 'title goes here...' : 'note goes here...'}
+					value={titleValue}
+				/>
+				{isEnabled && (
+					<TextInput
+						selectionColor="white"
+						style={styles.inputNote}
+						onChangeText={(input) => setBodyValue(input)}
+						placeholderTextColor="grey"
+						placeholder="body goes here..."
+						value={bodyValue}
+					/>
+				)}
+				<TouchableOpacity onPress={sendNotification} style={styles.button}>
+					<Text style={styles.buttonText}>NOTE</Text>
+				</TouchableOpacity>
 			</View>
-			<View style={styles.version}>
-				<Text style={styles.versionNumber}>v1.0</Text>
-			</View>
-		</View>
+		</KeyboardAvoidingView>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: 'black',
+		paddingTop: 150,
 	},
 	upperContainer: {
 		marginTop: 50,
@@ -87,6 +118,13 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		backgroundColor: 'black',
 	},
+	topContainer: {
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginBottom: 10,
+	},
+	switch: {},
 	title: {
 		color: 'white',
 		fontWeight: 'bold',
@@ -94,14 +132,12 @@ const styles = StyleSheet.create({
 	},
 	innerContainer: {
 		width: Dimensions.get('window').width,
-		marginBottom: 150,
 		paddingLeft: 40,
 		paddingRight: 40,
 	},
 	inputNote: {
 		borderWidth: 1,
 		borderColor: 'white',
-		marginTop: 10,
 		marginBottom: 5,
 		padding: 5,
 		borderRadius: 5,
